@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+
+</h:head>
+<h:body>
+    <h:outputStylesheet id="wisCSS" library="css" name="wisStyle.css"/>
+    <p:growl autoUpdate="true"/>
+
+    <div class="parent">
+        <div class="centralBlock">
+            <h:form>
+
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:outputLabel id="inputLable"
+                                   for="input"
+                                   value="#{messages['labels.arrayIn']}"/>
+                    <p:inputTextarea id="input" value="#{sortingBean.userInput}" rows="5" cols="50">
+                        <p:ajax />
+                    </p:inputTextarea>
+                </h:panelGrid>
+                <p:commandButton id="sortAction"
+                                 value="#{messages['buttons.sort']}"
+                                 actionListener="#{sortingBean.sort}"
+                                 update="output"
+                                 onclick="PF('bar').show()">
+                </p:commandButton>
+            </h:form>
+        </div>
+    </div>
+
+    <p:notificationBar id="topBar" position="top" effect="slide"
+                       styleClass="top" widgetVar="bar" style="background-color: cyan">
+        <div>
+            <p:commandButton value="#{messages['buttons.hide']}" onclick="PF('bar').hide()" type="button" icon="ui-icon-arrow-1-n"/>
+        </div>
+        <div>
+            <h:outputText id="output" value="#{sortingBean.resultOutput}" style="font-size:36px;"/>
+        </div>
+    </p:notificationBar>
+</h:body>
+</html>
