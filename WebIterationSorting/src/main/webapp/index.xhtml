@@ -13,27 +13,33 @@
     <h:outputStylesheet id="wisCSS" library="css" name="wisStyle.css"/>
     <p:growl autoUpdate="true"/>
 
-    <div class="parent">
-        <div class="centralBlock">
-            <h:form>
-
-                <h:panelGrid columns="1" cellpadding="5">
+    <!--<div class="parent">-->
+        <!--<div class="centralBlock">-->
+    <h:form>
+        <p:layout id="formLayout" style="position: center; margin-top: 10%; height: 500px">
+            <p:layoutUnit position="center">
+                <h:panelGrid columns="3" cellpadding="5">
                     <p:outputLabel id="inputLable"
                                    for="input"
                                    value="#{messages['labels.arrayIn']}"/>
-                    <p:inputTextarea id="input" value="#{sortingBean.userInput}" rows="5" cols="50">
-                        <p:ajax />
-                    </p:inputTextarea>
+                    <p:inputTextarea id="input" value="#{sortingBean.userInput}"
+                                     rows="5" cols="50"
+                                     onclick="PF('bar').hide()"/>
+                    <p:chart id="chart" type="line" model="#{sortingBean.chart}" style="width:400px;"/>
                 </h:panelGrid>
+            </p:layoutUnit>
+            <p:layoutUnit position="west" size="25%">
                 <p:commandButton id="sortAction"
                                  value="#{messages['buttons.sort']}"
                                  actionListener="#{sortingBean.sort}"
-                                 update="output"
+                                 update="output chart"
                                  onclick="PF('bar').show()">
                 </p:commandButton>
-            </h:form>
-        </div>
-    </div>
+            </p:layoutUnit>
+        </p:layout>
+    </h:form>
+    <!--</div>-->
+    <!--</div>-->
 
     <p:notificationBar id="topBar" position="top" effect="slide"
                        styleClass="top" widgetVar="bar" style="background-color: cyan">
