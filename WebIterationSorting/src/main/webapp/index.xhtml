@@ -14,41 +14,91 @@
     <p:growl autoUpdate="true"/>
 
     <!--<div class="parent">-->
-        <!--<div class="centralBlock">-->
-    <h:form>
-        <p:layout id="formLayout" style="position: center; margin-top: 10%; height: 500px">
-            <p:layoutUnit position="center">
-                <h:panelGrid id="grid" columns="3" cellpadding="5">
-                    <p:outputLabel id="inputLable"
-                                   for="input"
-                                   value="#{messages['labels.arrayIn']}"/>
-                    <p:inputTextarea id="input" value="#{sortingBean.userInput}"
-                                     rows="5" cols="50"
-                                     onclick="PF('bar').hide()"/>
-                    <p:chart id="chart" type="line" model="#{sortingBean.chart}" style="width:400px;"/>
-                </h:panelGrid>
-            </p:layoutUnit>
-            <p:layoutUnit position="west" size="25%">
-                <p:commandButton id="sortAction"
-                                 value="#{messages['buttons.sort']}"
-                                 actionListener="#{sortingBean.sort}"
-                                 update="output chart"
-                                 onclick="PF('bar').show()">
-                </p:commandButton>
-            </p:layoutUnit>
-        </p:layout>
+    <!--<div class="centralBlock">-->
+    <h:form id="mainForm">
+
+        <p:panelGrid style="margin-top: 2%">
+            <f:facet name="header">
+                <p:row>
+                    <p:column colspan="2">#{messages['labels.arrayIn']}</p:column>
+                </p:row>
+                <p:row>
+                    <p:column colspan="2">
+                        <p:inputTextarea id="input" value="#{sortingBean.userInput}"
+                                         rows="2" cols="32"
+                                         onclick="PF('bar').hide()">
+                        </p:inputTextarea>
+                    </p:column>
+                </p:row>
+
+            </f:facet>
+
+            <p:row>
+                <p:column style="font-weight: bold;">
+                    <p:commandButton id="sortAction"
+                                     value="#{messages['buttons.sort']}"
+                                     actionListener="#{sortingBean.sort}"
+                                     update="carouselView"
+                                     onclick="PF('bar').show()">
+                    </p:commandButton>
+                </p:column>
+
+                <p:column rowspan="2" style="font-weight: bold;">
+                    <p:selectBooleanButton onLabel="Ascend" offLabel="Descend" value="#{sorter.order}"/>
+                    <p:selectOneRadio value="#{sorter.sortingType}" layout="grid" columns="1">
+                        <f:selectItem itemLabel="Bubble" itemValue="Bubble"/>
+                        <f:selectItem itemLabel="Insertion sort" itemValue="Insertion sort"/>
+                        <f:selectItem itemLabel="Selection sort" itemValue="Selection sort"/>
+                    </p:selectOneRadio>
+                </p:column>
+            </p:row>
+
+            <p:row>
+                <p:column>
+                    <p:commandButton value="Clear" immediate="true"/>
+                </p:column>
+            </p:row>
+
+            <p:row>
+                <p:column colspan="2" styleClass="ui-widget-header">
+                    <p:spacer height="0"/>
+                </p:column>
+            </p:row>
+        </p:panelGrid>
+
     </h:form>
+
+    <p:carousel id="carouselView" numVisible="1"
+                autoPlayInterval="0" headerText="Scroll result"
+                circular="true" responsive="true" style="margin-bottom:0"
+                value="#{sortingBean.history}" var="historyUnit" pageLinks="5">
+        <p:tab title="Chart view">
+            <p:panelGrid columns="2">
+                <p:chart id="chartOutput" type="line" model="#{historyUnit.chartOutput}" style="width:500px;"/>
+                <h:outputText id="stringOutput" value="#{historyUnit.resultOutput}"
+                              style="font-size:36px; min-width: 100px"/>
+            </p:panelGrid>
+        </p:tab>
+        <p:tab title="Simple view">
+            <p:panel>
+
+            </p:panel>
+        </p:tab>
+    </p:carousel>
+
     <!--</div>-->
     <!--</div>-->
 
     <p:notificationBar id="topBar" position="top" effect="slide"
                        styleClass="top" widgetVar="bar" style="background-color: cyan">
         <div>
-            <p:commandButton value="#{messages['buttons.hide']}" onclick="PF('bar').hide()" type="button" icon="ui-icon-arrow-1-n"/>
+            <p:commandButton value="#{messages['buttons.hide']}" onclick="PF('bar').hide()" type="button"
+                             icon="ui-icon-arrow-1-n"/>
         </div>
         <div>
-            <h:outputText id="output" value="#{sortingBean.resultOutput}" style="font-size:36px;"/>
+
         </div>
     </p:notificationBar>
+
 </h:body>
 </html>

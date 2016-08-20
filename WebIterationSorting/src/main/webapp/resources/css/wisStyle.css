@@ -21,3 +21,10 @@
     line-height:4em;
     text-align: center;
 }
+
+.panelgrid-dotted-border.ui-panelgrid tr, .panelgrid-dotted-border.ui-panelgrid .ui-panelgrid-cell {
+    border-top : 1px dotted #000;
+    border-right : 1px dotted #000;
+    border-bottom : 1px dotted #000;
+    border-left : 1px dotted #000;
+}

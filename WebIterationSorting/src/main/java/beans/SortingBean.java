@@ -4,20 +4,14 @@ import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
-import org.primefaces.model.diagram.Connection;
-import org.primefaces.model.diagram.DefaultDiagramModel;
-import org.primefaces.model.diagram.Element;
-import org.primefaces.model.diagram.endpoint.DotEndPoint;
-import org.primefaces.model.diagram.endpoint.EndPointAnchor;
+import services.Sorter;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
-import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Homenko on 18.08.2016.
@@ -27,88 +21,58 @@ import java.util.List;
 public class SortingBean implements Serializable {
 
     private String userInput;
-    private String resultOutput;
-    private DefaultDiagramModel diagramResult;
-    private LineChartModel chart = new LineChartModel();
-    private LineChartModel chart1 = new LineChartModel();
+    private Deque<SortingResult> history;
+
+    @ManagedProperty(value = "#{sorter}")
+    private Sorter sorter;
 
     @PostConstruct
     public void init() {
-        int[] ints = {0, 0, 0, 0, 0};
-        fillChart(ints);
+        history = new LinkedList<>();
     }
 
     public void sort() {
 
+        SortingResult currentResult = new SortingResult();
         String[] spitedInput = getUserInput().split(" ");
-        int[] intArray = new int[spitedInput.length];
+        int[] inputArray = new int[spitedInput.length];
 
         for (int i = 0; i < spitedInput.length; i++) {
             if (!"".equals(spitedInput[i])){
-                intArray[i] = Integer.parseInt(spitedInput[i]);
+                inputArray[i] = Integer.parseInt(spitedInput[i]);
             }
         }
 
-        sort(intArray);
-        fillChart(intArray);
-        setResultOutput(Arrays.toString(intArray));
-    }
+        int[] sortedArray = sorter.sort(inputArray);
+        currentResult.setResultOutput(Arrays.toString(sortedArray));
+        currentResult.setChartOutput(fillChart(sortedArray));
 
-    private void sort(int[] arrayToSort) {
-        for (int i = 0; i < arrayToSort.length - 1; i++) {
-            for (int j = 0; j < arrayToSort.length - 1 - i; j++) {
-                if (arrayToSort[j] > arrayToSort[j+1]){
-                    int temp = arrayToSort[j + 1];
-                    arrayToSort[j + 1] = arrayToSort[j];
-                    arrayToSort[j] = temp;
-                }
-            }
+        history.addFirst(currentResult);
+        if (history.size() > 5) {
+            history.removeLast();
         }
     }
 
-    private void fillChart(int[] intArray) {
-        chart = new LineChartModel();
+    private LineChartModel fillChart(int[] intArray) {
+        LineChartModel chartOutput = new LineChartModel();
         LineChartSeries series = new LineChartSeries();
         series.setLabel("Yours array");
 
         for (int i = 0; i < intArray.length; i++) {
-            series.set(i + 1, intArray[i]);
+            series.set(i, intArray[i]);
         }
 
-        chart.addSeries(series);
-        chart.setTitle("Yours array in chart");
-        chart.setAnimate(true);
-        chart.setLegendPosition("se");
-        Axis yAxis = chart.getAxis(AxisType.Y);
+        chartOutput.addSeries(series);
+        chartOutput.setTitle("Yours array in chartOutput");
+        chartOutput.setAnimate(true);
+        chartOutput.setLegendPosition("se");
+        Axis yAxis = chartOutput.getAxis(AxisType.Y);
         yAxis.setMin(intArray[0]);
         yAxis.setMax(intArray[intArray.length - 1]);
-        Axis xAxis = chart.getAxis(AxisType.X);
-        xAxis.setMin(1);
-        yAxis.setMax(intArray.length + 1);
+        Axis xAxis = chartOutput.getAxis(AxisType.X);
+        xAxis.setMin(0);
+        return chartOutput;
     }
-
-    private void fillDiagram(int[] intArray) {
-        diagramResult = new DefaultDiagramModel();
-        diagramResult.setMaxConnections(-1);
-
-        for (int i : intArray) {
-            Element element = new Element("" + i);
-            element.addEndPoint(new DotEndPoint(EndPointAnchor.RIGHT));
-            element.addEndPoint(new DotEndPoint(EndPointAnchor.LEFT));
-            diagramResult.addElement(element);
-        }
-
-        List<Element> elements = diagramResult.getElements();
-
-        for (int i = 0; i < elements.size() - 1; i++) {
-            elements.get(i).setX("" + i*40 + 5);
-            elements.get(i).setY("" + i*20 + 5);
-            Connection connection = new Connection(elements.get(i).getEndPoints().get(0), elements.get(i + 1).getEndPoints().get(1));
-            diagramResult.connect(connection);
-        }
-    }
-
-
 
     public String getUserInput() {
         return userInput;
@@ -118,27 +82,11 @@ public class SortingBean implements Serializable {
         this.userInput = userInput;
     }
 
-    public String getResultOutput() {
-        return resultOutput;
+    public Deque<SortingResult> getHistory() {
+        return history;
     }
 
-    public void setResultOutput(String resultOutput) {
-        this.resultOutput = resultOutput;
-    }
-
-    public DefaultDiagramModel getDiagramResult() {
-        return diagramResult;
-    }
-
-    public void setDiagramResult(DefaultDiagramModel diagramResult) {
-        this.diagramResult = diagramResult;
-    }
-
-    public LineChartModel getChart() {
-        return chart;
-    }
-
-    public void setChart(LineChartModel chart) {
-        this.chart = chart;
+    public void setSorter(Sorter sorter) {
+        this.sorter = sorter;
     }
 }
