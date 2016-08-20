@@ -30,6 +30,7 @@ public class SortingBean implements Serializable {
     private String resultOutput;
     private DefaultDiagramModel diagramResult;
     private LineChartModel chart = new LineChartModel();
+    private LineChartModel chart1 = new LineChartModel();
 
     @PostConstruct
     public void init() {
