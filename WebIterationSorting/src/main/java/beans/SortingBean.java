@@ -26,6 +26,9 @@ public class SortingBean implements Serializable {
     @ManagedProperty(value = "#{sorter}")
     private Sorter sorter;
 
+    @ManagedProperty("#{messages}")
+    private ResourceBundle resourceBundle;
+
     @PostConstruct
     public void init() {
         history = new LinkedList<>();
@@ -56,16 +59,16 @@ public class SortingBean implements Serializable {
     private LineChartModel fillChart(int[] intArray) {
         LineChartModel chartOutput = new LineChartModel();
         LineChartSeries series = new LineChartSeries();
-        series.setLabel("Yours array");
+        series.setLabel(resourceBundle.getString("resultPanel.labels.chart.arrayAscend"));
 
         for (int i = 0; i < intArray.length; i++) {
             series.set(i, intArray[i]);
         }
 
         chartOutput.addSeries(series);
-        chartOutput.setTitle("Yours array in chartOutput");
+        chartOutput.setTitle(resourceBundle.getString("resultPanel.labels.chart.title"));
         chartOutput.setAnimate(true);
-        chartOutput.setLegendPosition("se");
+        chartOutput.setLegendPosition("nw");
         Axis yAxis = chartOutput.getAxis(AxisType.Y);
         yAxis.setMin(intArray[0]);
         yAxis.setMax(intArray[intArray.length - 1]);
@@ -88,5 +91,13 @@ public class SortingBean implements Serializable {
 
     public void setSorter(Sorter sorter) {
         this.sorter = sorter;
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
+    public void setResourceBundle(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 }
