@@ -2,10 +2,13 @@ package services;
 
 import beans.SortingResult;
 
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.Deque;
+import java.util.LinkedList;
 
 /**
  * Created by bender on 20.08.16.
@@ -16,6 +19,12 @@ public class Sorter implements Serializable {
 
     private String order;
     private String sortingType;
+    private Deque<SortingResult> history;
+
+    @PostConstruct
+    public void init() {
+        history = new LinkedList<>();
+    }
 
     public Sorter() {
     }
@@ -64,5 +73,13 @@ public class Sorter implements Serializable {
 
     public void setSortingType(String sortingType) {
         this.sortingType = sortingType;
+    }
+
+    public Deque<SortingResult> getHistory() {
+        return history;
+    }
+
+    public void setHistory(Deque<SortingResult> history) {
+        this.history = history;
     }
 }
