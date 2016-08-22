@@ -10,63 +10,73 @@
 </h:head>
 
 <h:body>
-
     <h:outputStylesheet id="wisCSS" library="css" name="wisStyle.css"/>
     <p:growl autoUpdate="true"/>
 
-    <h:form id="mainForm">
+    <div id="menuDiv" style="height: 15px" onmouseover="PF('bar').show()">
+        <p:outputLabel id="menuLable" value="Hover mouse here to the top to show menu"/>
+    </div>
 
-        <p:panelGrid style="margin-top: 2%">
-            <f:facet name="header">
-                <p:row>
-                    <p:column colspan="2">#{messages['inputForm.labels.arrayInLabel']}</p:column>
-                </p:row>
-                <p:row>
-                    <p:column colspan="2">
-                        <p:inputTextarea id="input" value="#{sortingBean.userInput}"
-                                         rows="2" cols="32"
-                                         onclick="PF('bar').hide()"/>
-                    </p:column>
-                </p:row>
-            </f:facet>
+    <div id="mainFormDiv">
+        <div id="sub-left">
+            <h:form id="mainForm">
 
-            <p:row>
-                <p:column style="font-weight: bold;">
-                    <p:commandButton id="sortAction"
-                                     value="#{messages['inputForm.buttons.sort']}"
-                                     actionListener="#{sortingBean.sort}"
-                                     update="carouselView"/>
-                </p:column>
+                <p:panelGrid style="margin-top: 2%">
+                    <f:facet name="header">
+                        <p:row>
+                            <p:column colspan="2">#{messages['inputForm.labels.arrayInLabel']}</p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:inputTextarea id="input" value="#{sortingBean.userInput}"
+                                                 rows="2" cols="32"
+                                                 onclick="PF('bar').hide()"/>
+                            </p:column>
+                        </p:row>
+                    </f:facet>
 
-                <p:column rowspan="2" style="font-weight: bold;">
-                    <p:selectBooleanButton onLabel="#{messages['inputForm.labels.sortType.sortAscend']}"
-                                           offLabel="#{messages['inputForm.labels.sortType.sortDescend']}"
-                                           value="#{sorter.order}"/>
-                    <p:selectOneRadio value="#{sorter.sortingType}" layout="grid" columns="1">
-                        <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.bubbleSort']}"
-                                      itemValue="Bubble"/>
-                        <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.insertionSort']}"
-                                      itemValue="Insertion sort"/>
-                        <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.selectionSort']}"
-                                      itemValue="Selection sort"/>
-                    </p:selectOneRadio>
-                </p:column>
-            </p:row>
+                    <p:row>
+                        <p:column style="font-weight: bold;">
+                            <p:commandButton id="sortAction"
+                                             value="#{messages['inputForm.buttons.sort']}"
+                                             actionListener="#{sortingBean.sort}"
+                                             update="carouselView"/>
+                        </p:column>
 
-            <p:row>
-                <p:column>
-                    <p:commandButton value="#{messages['inputForm.buttons.clear']}" immediate="true"/>
-                </p:column>
-            </p:row>
+                        <p:column rowspan="2" style="font-weight: bold;">
+                            <p:selectBooleanButton onLabel="#{messages['inputForm.labels.sortType.sortAscend']}"
+                                                   offLabel="#{messages['inputForm.labels.sortType.sortDescend']}"
+                                                   value="#{sorter.order}"/>
+                            <p:selectOneRadio value="#{sorter.sortingType}" layout="grid" columns="1">
+                                <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.bubbleSort']}"
+                                              itemValue="Bubble"/>
+                                <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.insertionSort']}"
+                                              itemValue="Insertion sort"/>
+                                <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.selectionSort']}"
+                                              itemValue="Selection sort"/>
+                            </p:selectOneRadio>
+                        </p:column>
+                    </p:row>
 
-            <p:row>
-                <p:column colspan="2" styleClass="ui-widget-header">
-                    <p:spacer height="0"/>
-                </p:column>
-            </p:row>
-        </p:panelGrid>
+                    <p:row>
+                        <p:column>
+                            <p:commandButton value="#{messages['inputForm.buttons.clear']}" immediate="true"/>
+                        </p:column>
+                    </p:row>
 
-    </h:form>
+                    <p:row>
+                        <p:column colspan="2" styleClass="ui-widget-header">
+                            <p:spacer height="0"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+
+            </h:form>
+        </div>
+        <div id="sub-right" style="min-height: 50px; width: 80px">
+        </div>
+        <div class="clear-both"></div>
+    </div>
 
     <p:carousel id="carouselView" numVisible="1"
                 autoPlayInterval="0" headerText="#{messages['resultPanel.labels.header']}"
@@ -81,15 +91,12 @@
         </p:tab>
     </p:carousel>
 
-    <p:notificationBar id="topBar" position="top" effect="slide"
-                       styleClass="top" widgetVar="bar" style="background-color: cyan">
-        <div>
-            <p:commandButton value="#{messages['inputForm.buttons.hide']}" onclick="PF('bar').hide()" type="button"
-                             icon="ui-icon-arrow-1-n"/>
-        </div>
-        <div>
-
-        </div>
+    <p:notificationBar id="topBar" widgetVar="bar" position="top" effect="slide"
+                       styleClass="top" style="background-color: cyan">
+        <p:button/>
+        <h:selectBooleanCheckbox/>
+        <p:spacer width="1px"/>
+        <div style="height: 1px"/>
     </p:notificationBar>
 
 </h:body>

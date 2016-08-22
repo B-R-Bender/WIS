@@ -28,3 +28,13 @@
     border-bottom : 1px dotted #000;
     border-left : 1px dotted #000;
 }
+
+#sub-left {
+    float: left;
+}
+#sub-right {
+    float: right;
+}
+.clear-both {
+    clear: both;
+}

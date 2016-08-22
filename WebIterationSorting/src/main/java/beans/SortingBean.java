@@ -10,6 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.SessionScoped;
+import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,11 +18,11 @@ import java.util.*;
  * Created by Homenko on 18.08.2016.
  */
 @ManagedBean(name = "sortingBean")
-@SessionScoped
+@ViewScoped
 public class SortingBean implements Serializable {
 
     private String userInput;
-    private Deque<SortingResult> history;
+//    private Deque<SortingResult> history;
 
     @ManagedProperty(value = "#{sorter}")
     private Sorter sorter;
@@ -31,7 +32,7 @@ public class SortingBean implements Serializable {
 
     @PostConstruct
     public void init() {
-        history = new LinkedList<>();
+//        history = new LinkedList<>();
     }
 
     public void sort() {
@@ -50,6 +51,7 @@ public class SortingBean implements Serializable {
         currentResult.setResultOutput(Arrays.toString(sortedArray));
         currentResult.setChartOutput(fillChart(sortedArray));
 
+        Deque<SortingResult> history = sorter.getHistory();
         history.addFirst(currentResult);
         if (history.size() > 5) {
             history.removeLast();
@@ -86,7 +88,7 @@ public class SortingBean implements Serializable {
     }
 
     public Deque<SortingResult> getHistory() {
-        return history;
+        return sorter.getHistory();
     }
 
     public void setSorter(Sorter sorter) {
