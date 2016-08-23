@@ -46,6 +46,11 @@ public class Sorter implements Serializable {
         return result;
     }
 
+    /**
+     * Strait method of bubble sort
+     * @param arrayToSort
+     * @return
+     */
     private int[] bubbleSort(int[] arrayToSort) {
         for (int i = 0; i < arrayToSort.length - 1; i++) {
             for (int j = 0; j < arrayToSort.length - 1 - i; j++) {
@@ -54,6 +59,56 @@ public class Sorter implements Serializable {
                     arrayToSort[j + 1] = arrayToSort[j];
                     arrayToSort[j] = temp;
                 }
+            }
+        }
+        return arrayToSort;
+    }
+
+    /**
+     * Improved method of bubble sort.
+     * Breaks iteration if array was sorted before loop ends
+     * @param arrayToSort
+     * @return
+     */
+    private int[] bubbleSortImproved(int[] arrayToSort) {
+        boolean isArraySorted;
+        for (int i = 0; i < arrayToSort.length - 1; i++) {
+            isArraySorted = true;
+            for (int j = 0; j < arrayToSort.length - 1 - i; j++) {
+                if (arrayToSort[j] > arrayToSort[j+1]){
+                    int temp = arrayToSort[j + 1];
+                    arrayToSort[j + 1] = arrayToSort[j];
+                    arrayToSort[j] = temp;
+                    isArraySorted = false;
+                }
+            }
+            if (isArraySorted) {
+                break;
+            }
+        }
+        return arrayToSort;
+    }
+
+    /**
+     * Improved method of bubble sort.
+     * Breaks iteration if array was sorted before loop ends
+     * @param arrayToSort
+     * @return
+     */
+    private int[] insertionSort(int[] arrayToSort) {
+        boolean isArraySorted;
+        for (int i = 0; i < arrayToSort.length - 1; i++) {
+            isArraySorted = true;
+            for (int j = 0; j < arrayToSort.length - 1 - i; j++) {
+                if (arrayToSort[j] > arrayToSort[j+1]){
+                    int temp = arrayToSort[j + 1];
+                    arrayToSort[j + 1] = arrayToSort[j];
+                    arrayToSort[j] = temp;
+                    isArraySorted = false;
+                }
+            }
+            if (isArraySorted) {
+                break;
             }
         }
         return arrayToSort;
