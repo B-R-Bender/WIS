@@ -33,6 +33,7 @@ public class SortingBean implements Serializable {
     @PostConstruct
     public void init() {
 //        history = new LinkedList<>();
+        System.out.println("Initializing form");
     }
 
     public void sort() {
