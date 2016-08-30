@@ -7,8 +7,35 @@ import org.primefaces.model.chart.LineChartModel;
  */
 public class SortingResult {
 
-    private LineChartModel chartOutput;
+    private int[] inputArray;
+    private String sortingType;
+    private long timeElapsed;
     private String resultOutput;
+    private LineChartModel chartOutput;
+
+    public int[] getInputArray() {
+        return inputArray;
+    }
+
+    public void setInputArray(int[] inputArray) {
+        this.inputArray = inputArray;
+    }
+
+    public long getTimeElapsed() {
+        return timeElapsed;
+    }
+
+    public void setTimeElapsed(long timeElapsed) {
+        this.timeElapsed = timeElapsed;
+    }
+
+    public String getSortingType() {
+        return sortingType;
+    }
+
+    public void setSortingType(String sortingType) {
+        this.sortingType = sortingType;
+    }
 
     public LineChartModel getChartOutput() {
         return chartOutput;

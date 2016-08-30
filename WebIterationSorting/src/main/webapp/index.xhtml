@@ -11,9 +11,9 @@
 
 <h:body>
     <h:outputStylesheet id="wisCSS" library="css" name="wisStyle.css"/>
-    <p:growl autoUpdate="true"/>
+    <p:growl id="growlMessages" autoUpdate="true" showDetail="true" showSummary="true"/>
 
-    <div id="menuDiv" style="height: 15px" onmouseover="PF('bar').show()">
+    <div id="menuDiv" style="height: 15px" onmouseover="/*PF('bar').show()*/">
         <p:outputLabel id="menuLable" value="Hover mouse here to the top to show menu"/>
     </div>
 
@@ -24,13 +24,29 @@
                 <p:panelGrid style="margin-top: 2%">
                     <f:facet name="header">
                         <p:row>
-                            <p:column colspan="2">#{messages['inputForm.labels.arrayInLabel']}</p:column>
+                            <p:column colspan="2" style="min-width: 40%">#{messages['inputForm.labels.inputDescriptionLabel']}</p:column>
+                            <p:column style="min-width: 60%">#{messages['testingPanel.labels.testDescriptionLable']}</p:column>
                         </p:row>
                         <p:row>
                             <p:column colspan="2">
                                 <p:inputTextarea id="input" value="#{sortingBean.userInput}"
                                                  rows="2" cols="32"
                                                  onclick="PF('bar').hide()"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel for="testArrayLength"
+                                               value="Enter desireble length for auto-generated random array"/>
+                                <h:inputText id="testArrayLength"
+                                             validatorMessage="Num must be in range 0 ~ 100K"
+                                             value="#{testSortingBean.randomArrayLength}">
+                                    <f:validateLongRange minimum="0" maximum="100000"/>
+                                </h:inputText>
+                                <p:commandButton id="runTestButton"
+                                                 value="#{messages['testingPanel.buttons.runTestButton']}"
+                                                 type="button">
+                                    <p:ajax event="click" listener="#{testSortingBean.runTests}"
+                                            process="testArrayLength @this" update="testOutput"/>
+                                </p:commandButton>
                             </p:column>
                         </p:row>
                     </f:facet>
@@ -40,21 +56,43 @@
                             <p:commandButton id="sortAction"
                                              value="#{messages['inputForm.buttons.sort']}"
                                              actionListener="#{sortingBean.sort}"
+                                             process="@this input orderSelection sortTypeSelection"
                                              update="carouselView"/>
                         </p:column>
 
                         <p:column rowspan="2" style="font-weight: bold;">
-                            <p:selectBooleanButton onLabel="#{messages['inputForm.labels.sortType.sortAscend']}"
+                            <p:selectBooleanButton id="orderSelection"
+                                                   onLabel="#{messages['inputForm.labels.sortType.sortAscend']}"
                                                    offLabel="#{messages['inputForm.labels.sortType.sortDescend']}"
                                                    value="#{sorter.order}"/>
-                            <p:selectOneRadio value="#{sorter.sortingType}" layout="grid" columns="1">
+                            <p:selectOneRadio id="sortTypeSelection" value="#{sorter.sortingType}" layout="grid" columns="1">
                                 <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.bubbleSort']}"
-                                              itemValue="Bubble"/>
-                                <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.insertionSort']}"
-                                              itemValue="Insertion sort"/>
+                                              itemValue="Bubble sort"/>
                                 <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.selectionSort']}"
                                               itemValue="Selection sort"/>
+                                <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.insertionSort']}"
+                                              itemValue="Insertion sort"/>
                             </p:selectOneRadio>
+                        </p:column>
+
+                        <p:column rowspan="3">
+                            <p:dataTable id="testOutput"
+                                         scrollable="true" scrollHeight="150"
+                                         value="#{testSortingBean.testReport}" var="sortTest"
+                                         style="height: 100%; width: 100%; align-self: center">
+                                <p:column headerText="Sorting type">
+                                    <p:lightBox iframe="true" id="lighbox3">
+                                        <h:outputLink value="#{testSortingBean.getLink(sortTest.sortingType)}"
+                                                      title="Wiki">
+                                            <h:outputText value="#{sortTest.sortingType}"/>
+                                        </h:outputLink>
+                                    </p:lightBox>
+                                </p:column>
+                                <p:column headerText="Time to sort">
+                                    <h:outputText value="#{sortTest.timeElapsed > 999 ? sortTest.timeElapsed/1000 : sortTest.timeElapsed}"/>
+                                    <h:outputText value="#{sortTest.timeElapsed > 999 ? ' sec' : ' msec'}"/>
+                                </p:column>
+                            </p:dataTable>
                         </p:column>
                     </p:row>
 
@@ -73,10 +111,11 @@
 
             </h:form>
         </div>
-        <div id="sub-right" style="min-height: 50px; width: 80px">
-        </div>
+        <div id="sub-right" style="min-height: 0px; width: 0px"></div>
         <div class="clear-both"></div>
     </div>
+
+    <p:spacer id="spaces" height="10px"/>
 
     <p:carousel id="carouselView" numVisible="1"
                 autoPlayInterval="0" headerText="#{messages['resultPanel.labels.header']}"
@@ -93,11 +132,17 @@
 
     <p:notificationBar id="topBar" widgetVar="bar" position="top" effect="slide"
                        styleClass="top" style="background-color: cyan">
-        <p:button/>
-        <h:selectBooleanCheckbox/>
-        <p:spacer width="1px"/>
-        <div style="height: 1px"/>
+        <p:selectOneRadio style="position: absolute">
+            <f:selectItem itemLabel="ru" itemValue="ru"/>
+            <f:selectItem itemLabel="en" itemValue="en"/>
+        </p:selectOneRadio>
+        <p:spacer style="height: inherit"/>
+        <div style="height: 5px" onmouseout="PF('bar').hide()"/>
     </p:notificationBar>
+
+    <p:blockUI id="wholeBlocker" block="mainForm" trigger="mainForm:sortAction mainForm:runTestButton">
+        LOADING
+    </p:blockUI>
 
 </h:body>
 </html>

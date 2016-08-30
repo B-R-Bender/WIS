@@ -9,7 +9,6 @@ import services.Sorter;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.SessionScoped;
 import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
 import java.util.*;
@@ -22,7 +21,6 @@ import java.util.*;
 public class SortingBean implements Serializable {
 
     private String userInput;
-//    private Deque<SortingResult> history;
 
     @ManagedProperty(value = "#{sorter}")
     private Sorter sorter;
@@ -32,8 +30,7 @@ public class SortingBean implements Serializable {
 
     @PostConstruct
     public void init() {
-//        history = new LinkedList<>();
-        System.out.println("Initializing form");
+        System.out.println("Initializing form, application starts.");
     }
 
     public void sort() {
@@ -62,7 +59,6 @@ public class SortingBean implements Serializable {
     private LineChartModel fillChart(int[] intArray) {
         LineChartModel chartOutput = new LineChartModel();
         LineChartSeries series = new LineChartSeries();
-        series.setLabel(resourceBundle.getString("resultPanel.labels.chart.arrayAscend"));
 
         for (int i = 0; i < intArray.length; i++) {
             series.set(i, intArray[i]);
@@ -71,10 +67,19 @@ public class SortingBean implements Serializable {
         chartOutput.addSeries(series);
         chartOutput.setTitle(resourceBundle.getString("resultPanel.labels.chart.title"));
         chartOutput.setAnimate(true);
-        chartOutput.setLegendPosition("nw");
+
         Axis yAxis = chartOutput.getAxis(AxisType.Y);
-        yAxis.setMin(intArray[0]);
-        yAxis.setMax(intArray[intArray.length - 1]);
+        if (sorter.getOrder()){
+            yAxis.setMin(intArray[0]);
+            yAxis.setMax(intArray[intArray.length - 1]);
+            chartOutput.setLegendPosition("nw");
+            series.setLabel(resourceBundle.getString("resultPanel.labels.chart.arrayAscend"));
+        } else {
+            yAxis.setMin(intArray[intArray.length - 1]);
+            yAxis.setMax(intArray[0]);
+            chartOutput.setLegendPosition("sw");
+            series.setLabel(resourceBundle.getString("resultPanel.labels.chart.arrayDescend"));
+        }
         Axis xAxis = chartOutput.getAxis(AxisType.X);
         xAxis.setMin(0);
         return chartOutput;
