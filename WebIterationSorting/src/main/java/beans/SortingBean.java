@@ -4,12 +4,15 @@ import org.primefaces.model.chart.Axis;
 import org.primefaces.model.chart.AxisType;
 import org.primefaces.model.chart.LineChartModel;
 import org.primefaces.model.chart.LineChartSeries;
+import services.LocaleBean;
 import services.Sorter;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
+import javax.faces.bean.RequestScoped;
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.*;
 
@@ -17,7 +20,7 @@ import java.util.*;
  * Created by Homenko on 18.08.2016.
  */
 @ManagedBean(name = "sortingBean")
-@ViewScoped
+@RequestScoped
 public class SortingBean implements Serializable {
 
     private String userInput;
@@ -28,6 +31,9 @@ public class SortingBean implements Serializable {
     @ManagedProperty("#{messages}")
     private ResourceBundle resourceBundle;
 
+    @ManagedProperty("#{localeBean}")
+    private LocaleBean locale;
+
     @PostConstruct
     public void init() {
         System.out.println("Initializing form, application starts.");
@@ -36,23 +42,34 @@ public class SortingBean implements Serializable {
     public void sort() {
 
         SortingResult currentResult = new SortingResult();
-        String[] spitedInput = getUserInput().split(" ");
-        int[] inputArray = new int[spitedInput.length];
+        String[] splittedInput = getUserInput().split(" ");
+        int[] inputArray = new int[splittedInput.length];
+        int splittedInputIndex = 0;
 
-        for (int i = 0; i < spitedInput.length; i++) {
-            if (!"".equals(spitedInput[i])){
-                inputArray[i] = Integer.parseInt(spitedInput[i]);
+        try {
+            for (; splittedInputIndex < splittedInput.length; splittedInputIndex++) {
+                if (!"".equals(splittedInput[splittedInputIndex])) {
+                    inputArray[splittedInputIndex] = Integer.parseInt(splittedInput[splittedInputIndex]);
+                }
             }
-        }
 
-        int[] sortedArray = sorter.sort(inputArray);
-        currentResult.setResultOutput(Arrays.toString(sortedArray));
-        currentResult.setChartOutput(fillChart(sortedArray));
+            int[] sortedArray = sorter.sort(inputArray);
+            currentResult.setResultOutput(Arrays.toString(sortedArray));
+            currentResult.setChartOutput(fillChart(sortedArray));
 
-        Deque<SortingResult> history = sorter.getHistory();
-        history.addFirst(currentResult);
-        if (history.size() > 5) {
-            history.removeLast();
+            Deque<SortingResult> history = sorter.getHistory();
+            history.addFirst(currentResult);
+            if (history.size() > 5) {
+                history.removeLast();
+            }
+
+        } catch (NumberFormatException e) {
+            FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                                                    resourceBundle.getString("inputForm.message.error.errorMSG"),
+                                                    splittedInput[splittedInputIndex] +
+                                                            " " +
+                                                            resourceBundle.getString("inputForm.message.error.NAN"));
+            FacesContext.getCurrentInstance().addMessage("mainForm", message);
         }
     }
 
@@ -65,7 +82,25 @@ public class SortingBean implements Serializable {
         }
 
         chartOutput.addSeries(series);
-        chartOutput.setTitle(resourceBundle.getString("resultPanel.labels.chart.title"));
+        String chartTitle = null;
+        switch (sorter.getSortingType()) {
+            case "Bubble sort":
+                chartTitle = resourceBundle.getString("resultPanel.labels.chart.title") +
+                        " - " +
+                        resourceBundle.getString("inputForm.labels.sortType.bubbleSort");
+                break;
+            case "Selection sort":
+                chartTitle = resourceBundle.getString("resultPanel.labels.chart.title") +
+                        " - " +
+                        resourceBundle.getString("inputForm.labels.sortType.selectionSort");
+                break;
+            case "Insertion sort":
+                chartTitle = resourceBundle.getString("resultPanel.labels.chart.title") +
+                        " - " +
+                        resourceBundle.getString("inputForm.labels.sortType.insertionSort");
+                break;
+        }
+        chartOutput.setTitle(chartTitle);
         chartOutput.setAnimate(true);
 
         Axis yAxis = chartOutput.getAxis(AxisType.Y);
@@ -83,6 +118,12 @@ public class SortingBean implements Serializable {
         Axis xAxis = chartOutput.getAxis(AxisType.X);
         xAxis.setMin(0);
         return chartOutput;
+    }
+
+    public void clear() {
+        userInput = "";
+        sorter.setOrder(false);
+        sorter.setSortingType(null);
     }
 
     public String getUserInput() {
@@ -107,5 +148,13 @@ public class SortingBean implements Serializable {
 
     public void setResourceBundle(ResourceBundle resourceBundle) {
         this.resourceBundle = resourceBundle;
+    }
+
+    public LocaleBean getLocale() {
+        return locale;
+    }
+
+    public void setLocale(LocaleBean locale) {
+        this.locale = locale;
     }
 }

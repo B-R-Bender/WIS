@@ -6,20 +6,26 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-<h:head>
-</h:head>
+
+<f:view locale="#{localeBean.locale}">
+
+<h:head></h:head>
 
 <h:body>
     <h:outputStylesheet id="wisCSS" library="css" name="wisStyle.css"/>
     <p:growl id="growlMessages" autoUpdate="true" showDetail="true" showSummary="true"/>
 
-    <div id="menuDiv" style="height: 15px" onmouseover="/*PF('bar').show()*/">
-        <p:outputLabel id="menuLable" value="Hover mouse here to the top to show menu"/>
-    </div>
-
     <div id="mainFormDiv">
+
         <div id="sub-left">
             <h:form id="mainForm">
+
+                <div id="menuDiv" style="height: 15px" onmouseover="/*PF('bar').show()*/">
+                    <p:outputLabel id="menuLable" value="#{messages['common.labels.selectLanguageLable']}"/>
+                    <h:selectOneMenu value="#{localeBean.language}" onchange="submit()">
+                        <f:selectItems value="#{localeBean.locales}"/>
+                    </h:selectOneMenu>
+                </div>
 
                 <p:panelGrid style="margin-top: 2%">
                     <f:facet name="header">
@@ -35,9 +41,9 @@
                             </p:column>
                             <p:column>
                                 <p:outputLabel for="testArrayLength"
-                                               value="Enter desireble length for auto-generated random array"/>
+                                               value="#{messages['testingPanel.labels.randomArrayLengthInputLabel']}"/>
                                 <h:inputText id="testArrayLength"
-                                             validatorMessage="Num must be in range 0 ~ 100K"
+                                             validatorMessage="#{messages['testingPanel.validator.msg.randomArrayLengthErrorMessage']}"
                                              value="#{testSortingBean.randomArrayLength}">
                                     <f:validateLongRange minimum="0" maximum="100000"/>
                                 </h:inputText>
@@ -61,11 +67,14 @@
                         </p:column>
 
                         <p:column rowspan="2" style="font-weight: bold;">
-                            <p:selectBooleanButton id="orderSelection"
+                            <p:selectBooleanButton id="orderSelection" widgetVar="123"
                                                    onLabel="#{messages['inputForm.labels.sortType.sortAscend']}"
                                                    offLabel="#{messages['inputForm.labels.sortType.sortDescend']}"
                                                    value="#{sorter.order}"/>
-                            <p:selectOneRadio id="sortTypeSelection" value="#{sorter.sortingType}" layout="grid" columns="1">
+                            <p:selectOneRadio id="sortTypeSelection" value="#{sorter.sortingType}"
+                                              layout="grid" columns="1"
+                                              required="true"
+                                              requiredMessage="#{messages['inputForm.message.error.noSortingMethodSelection']}">
                                 <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.bubbleSort']}"
                                               itemValue="Bubble sort"/>
                                 <f:selectItem itemLabel="#{messages['inputForm.labels.sortType.selectionSort']}"
@@ -80,15 +89,15 @@
                                          scrollable="true" scrollHeight="150"
                                          value="#{testSortingBean.testReport}" var="sortTest"
                                          style="height: 100%; width: 100%; align-self: center">
-                                <p:column headerText="Sorting type">
-                                    <p:lightBox iframe="true" id="lighbox3">
+                                <p:column headerText="#{messages['testingPanel.labels.sortingTypeColumn']}">
+                                    <p:lightBox iframe="true" id="lighbox">
                                         <h:outputLink value="#{testSortingBean.getLink(sortTest.sortingType)}"
                                                       title="Wiki">
                                             <h:outputText value="#{sortTest.sortingType}"/>
                                         </h:outputLink>
                                     </p:lightBox>
                                 </p:column>
-                                <p:column headerText="Time to sort">
+                                <p:column headerText="#{messages['testingPanel.labels.timeToSortColumn']}">
                                     <h:outputText value="#{sortTest.timeElapsed > 999 ? sortTest.timeElapsed/1000 : sortTest.timeElapsed}"/>
                                     <h:outputText value="#{sortTest.timeElapsed > 999 ? ' sec' : ' msec'}"/>
                                 </p:column>
@@ -98,7 +107,11 @@
 
                     <p:row>
                         <p:column>
-                            <p:commandButton value="#{messages['inputForm.buttons.clear']}" immediate="true"/>
+                            <p:commandButton value="#{messages['inputForm.buttons.clear']}"
+                                             process="@this"
+                                             actionListener="#{sortingBean.clear()}"
+                                             update="mainForm">
+                            </p:commandButton>
                         </p:column>
                     </p:row>
 
@@ -117,7 +130,7 @@
 
     <p:spacer id="spaces" height="10px"/>
 
-    <p:carousel id="carouselView" numVisible="1"
+    <p:carousel id="carouselView" widgetVar="carousel" numVisible="1"
                 autoPlayInterval="0" headerText="#{messages['resultPanel.labels.header']}"
                 circular="true" responsive="true" style="margin-bottom:0"
                 value="#{sortingBean.history}" var="historyUnit" pageLinks="5">
@@ -145,4 +158,5 @@
     </p:blockUI>
 
 </h:body>
+</f:view>
 </html>
